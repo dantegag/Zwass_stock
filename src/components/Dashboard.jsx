@@ -19,31 +19,31 @@ export default function Dashboard({ products }) {
   const saleValue = products.reduce((s, p) => s + (p.sale_price || 0) * (p.quantity || 0), 0)
 
   const StatCard = ({ icon: Icon, label, value, color = 'text-cream', valueClass = '' }) => (
-    <div className="bg-card border border-white/5 rounded-xl p-5 flex items-start gap-4 hover:border-white/10 transition-colors">
-      <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-        <Icon className={`w-5 h-5 ${color}`} />
+    <div className="bg-card border border-white/5 rounded-xl p-3 sm:p-5 flex items-start gap-3 sm:gap-4 hover:border-white/10 transition-colors">
+      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+        <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${color}`} />
       </div>
       <div className="min-w-0">
-        <p className="text-muted text-xs uppercase tracking-wider mb-1">{label}</p>
-        <p className={`font-display text-2xl ${valueClass || color}`}>{value}</p>
+        <p className="text-muted text-[10px] sm:text-xs uppercase tracking-wider mb-0.5 sm:mb-1 leading-tight">{label}</p>
+        <p className={`font-display text-xl sm:text-2xl ${valueClass || color}`}>{value}</p>
       </div>
     </div>
   )
 
   const FinancialCard = ({ icon: Icon, label, value }) => (
-    <div className="bg-card border border-white/5 rounded-xl p-5 flex items-start gap-4 hover:border-white/10 transition-colors">
-      <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
-        <Icon className="w-5 h-5 text-accent" />
+    <div className="bg-card border border-white/5 rounded-xl p-3 sm:p-5 flex items-start gap-3 sm:gap-4 hover:border-white/10 transition-colors">
+      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-muted text-xs uppercase tracking-wider mb-1">{label}</p>
-        <p className="font-display text-2xl text-cream">
+        <p className="text-muted text-[10px] sm:text-xs uppercase tracking-wider mb-0.5 sm:mb-1 leading-tight">{label}</p>
+        <p className="font-display text-base sm:text-2xl text-cream break-words leading-tight">
           {unlocked ? value : <span className="tracking-widest text-muted">●●●●●●</span>}
         </p>
       </div>
       <button
         onClick={() => unlocked ? setUnlocked(false) : setShowPin(true)}
-        className="text-muted hover:text-accent transition-colors mt-1"
+        className="text-muted hover:text-accent transition-colors mt-1 shrink-0"
         title={unlocked ? 'Ocultar' : 'Mostrar'}
       >
         {unlocked ? <EyeSlashIcon className="w-4 h-4" /> : <LockClosedIcon className="w-4 h-4" />}
@@ -53,7 +53,7 @@ export default function Dashboard({ products }) {
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
         <StatCard icon={CubeIcon} label="Productos" value={total} color="text-accent" />
         <StatCard icon={ArchiveBoxIcon} label="Unidades" value={totalUnits} color="text-cream" />
         <StatCard

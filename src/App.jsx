@@ -58,7 +58,7 @@ export default function App() {
         onExport={() => exportToExcel(products)}
       />
 
-      <main className="max-w-screen-xl mx-auto px-6 py-8 flex flex-col gap-8">
+      <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-6 sm:gap-8">
         {loading ? (
           <div className="flex items-center justify-center py-24">
             <div className="flex flex-col items-center gap-4">
