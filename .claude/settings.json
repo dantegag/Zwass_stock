@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\Users\\\\marla\\\\Zwass_stock\\\\supabase\\\\migrations\" -Force)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
