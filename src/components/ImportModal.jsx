@@ -176,8 +176,8 @@ export default function ImportModal({ onImport, onClose }) {
                   <p className="text-muted text-xs mt-1">Importados</p>
                 </div>
                 <div className="bg-surface rounded-xl p-4 text-center border border-white/5">
-                  <p className="text-2xl font-display text-accent">{result.updated}</p>
-                  <p className="text-muted text-xs mt-1">Actualizados</p>
+                  <p className="text-2xl font-display text-accent">{result.restocked}</p>
+                  <p className="text-muted text-xs mt-1">Reposición</p>
                 </div>
                 <div className="bg-surface rounded-xl p-4 text-center border border-white/5">
                   <p className={`text-2xl font-display ${result.errors > 0 ? 'text-danger' : 'text-muted'}`}>{result.errors}</p>

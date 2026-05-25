@@ -85,19 +85,36 @@ export function useProducts() {
   }
 
   const upsertMany = async (rows) => {
-    let imported = 0, updated = 0, errors = 0
+    let imported = 0, restocked = 0, errors = 0
     for (const row of rows) {
       try {
         if (row.sku) {
           const { data: existing } = await supabase
             .from('products')
-            .select('id')
+            .select('id, quantity')
             .eq('sku', row.sku)
             .is('deleted_at', null)
             .single()
           if (existing) {
-            await supabase.from('products').update(row).eq('id', existing.id)
-            updated++
+            const addQty = Number(row.quantity) || 0
+            const newQty = (existing.quantity || 0) + addQty
+            const { error: prodErr } = await supabase
+              .from('products')
+              .update({ quantity: newQty })
+              .eq('id', existing.id)
+            if (prodErr) throw prodErr
+            if (addQty > 0) {
+              const { error: movErr } = await supabase
+                .from('stock_movements')
+                .insert([{
+                  product_id: existing.id,
+                  type: 'add',
+                  quantity: addQty,
+                  note: 'Importación Excel',
+                }])
+              if (movErr) throw movErr
+            }
+            restocked++
           } else {
             await supabase.from('products').insert([row])
             imported++
@@ -111,7 +128,7 @@ export function useProducts() {
       }
     }
     await fetchProducts()
-    return { imported, updated, errors }
+    return { imported, restocked, errors }
   }
 
   return { products, loading, error, fetchProducts, addProduct, updateProduct, deleteProduct, adjustStock, upsertMany }
