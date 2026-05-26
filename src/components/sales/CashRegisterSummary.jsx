@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import PaymentMethodTable from './PaymentMethodTable'
+import SalesCharts from './SalesCharts'
 
 function startOfDay() {
   const d = new Date()
@@ -82,7 +83,7 @@ export default function CashRegisterSummary({ sales, onPrint, onExport }) {
 
       <PaymentMethodTable sales={filteredSales} />
 
-      <div id="sales-charts-slot" data-range-from={startDate.toISOString()} data-range-to={endDate.toISOString()} />
+      <SalesCharts sales={filteredSales} dateRange={{ from: startDate, to: endDate }} />
     </div>
   )
 }
