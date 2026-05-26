@@ -17,33 +17,39 @@ export default function Header({ onAddProduct, onImport, onExport }) {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={onImport}
-            aria-label="Importar"
-            className="flex items-center gap-2 px-2.5 sm:px-4 py-2 rounded-lg border border-white/10 text-muted hover:text-cream hover:border-accent/40 transition-all text-sm"
-          >
-            <ArrowUpTrayIcon className="w-4 h-4 shrink-0" />
-            <span className="hidden md:inline">Importar</span>
-          </button>
+          {onImport && (
+            <button
+              onClick={onImport}
+              aria-label="Importar"
+              className="flex items-center gap-2 px-2.5 sm:px-4 py-2 rounded-lg border border-white/10 text-muted hover:text-cream hover:border-accent/40 transition-all text-sm"
+            >
+              <ArrowUpTrayIcon className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">Importar</span>
+            </button>
+          )}
 
-          <button
-            onClick={onExport}
-            aria-label="Exportar"
-            className="flex items-center gap-2 px-2.5 sm:px-4 py-2 rounded-lg border border-white/10 text-muted hover:text-cream hover:border-accent/40 transition-all text-sm"
-          >
-            <ArrowDownTrayIcon className="w-4 h-4 shrink-0" />
-            <span className="hidden md:inline">Exportar</span>
-          </button>
+          {onExport && (
+            <button
+              onClick={onExport}
+              aria-label="Exportar"
+              className="flex items-center gap-2 px-2.5 sm:px-4 py-2 rounded-lg border border-white/10 text-muted hover:text-cream hover:border-accent/40 transition-all text-sm"
+            >
+              <ArrowDownTrayIcon className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">Exportar</span>
+            </button>
+          )}
 
-          <button
-            onClick={onAddProduct}
-            aria-label="Nuevo producto"
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-accent text-bg hover:bg-accent-dark transition-colors text-sm font-medium whitespace-nowrap"
-          >
-            <PlusIcon className="w-4 h-4 shrink-0" />
-            <span className="hidden sm:inline">Nuevo producto</span>
-            <span className="sm:hidden">Nuevo</span>
-          </button>
+          {onAddProduct && (
+            <button
+              onClick={onAddProduct}
+              aria-label="Nuevo producto"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-accent text-bg hover:bg-accent-dark transition-colors text-sm font-medium whitespace-nowrap"
+            >
+              <PlusIcon className="w-4 h-4 shrink-0" />
+              <span className="hidden sm:inline">Nuevo producto</span>
+              <span className="sm:hidden">Nuevo</span>
+            </button>
+          )}
         </div>
       </div>
     </header>
