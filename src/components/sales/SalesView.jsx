@@ -3,6 +3,7 @@ import Header from '../shared/Header'
 import RegisterSaleButton from './RegisterSaleButton'
 import RegisterSaleModal from './RegisterSaleModal'
 import SalesHistory from './SalesHistory'
+import CashRegisterSummary from './CashRegisterSummary'
 import { useProducts } from '../../hooks/useProducts'
 import { useSales } from '../../hooks/useSales'
 
@@ -40,7 +41,13 @@ export default function SalesView() {
       </div>
 
       {subTab === 'history' && <SalesHistory sales={sales} onVoid={voidSale} />}
-      {subTab === 'summary' && <div className="text-muted text-sm">Resumen de Caja (próxima tarea)</div>}
+      {subTab === 'summary' && (
+        <CashRegisterSummary
+          sales={sales}
+          onPrint={() => alert('Print en próxima tarea')}
+          onExport={() => alert('Export en próxima tarea')}
+        />
+      )}
 
       {modalOpen && (
         <RegisterSaleModal
