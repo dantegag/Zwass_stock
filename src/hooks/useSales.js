@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useId } from 'react'
 import { supabase } from '../lib/supabase'
 
 export function useSales() {
   const [sales, setSales] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const instanceId = useId()
 
   const fetchSales = useCallback(async () => {
     setLoading(true)
@@ -21,11 +22,11 @@ export function useSales() {
   useEffect(() => {
     fetchSales()
     const channel = supabase
-      .channel('sales-realtime')
+      .channel(`sales-realtime-${instanceId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'sales' }, fetchSales)
       .subscribe()
     return () => supabase.removeChannel(channel)
-  }, [fetchSales])
+  }, [fetchSales, instanceId])
 
   const registerSale = async (sale) => {
     const { data, error } = await supabase
