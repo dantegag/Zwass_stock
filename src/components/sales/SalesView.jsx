@@ -41,13 +41,7 @@ export default function SalesView() {
       </div>
 
       {subTab === 'history' && <SalesHistory sales={sales} onVoid={voidSale} />}
-      {subTab === 'summary' && (
-        <CashRegisterSummary
-          sales={sales}
-          onPrint={() => alert('Print en próxima tarea')}
-          onExport={() => alert('Export en próxima tarea')}
-        />
-      )}
+      {subTab === 'summary' && <CashRegisterSummary sales={sales} />}
 
       {modalOpen && (
         <RegisterSaleModal
