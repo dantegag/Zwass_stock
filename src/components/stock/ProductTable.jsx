@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react'
 import {
   ChevronUpIcon, ChevronDownIcon, ChevronUpDownIcon,
   PencilIcon, TrashIcon, PlusCircleIcon, MinusCircleIcon,
-  ClockIcon, MagnifyingGlassIcon, LockClosedIcon, EyeSlashIcon
+  ClockIcon, MagnifyingGlassIcon, LockClosedIcon, EyeSlashIcon,
+  BanknotesIcon
 } from '@heroicons/react/24/outline'
 import { formatARS } from '../../lib/formatCurrency'
 import { usePin } from '../../contexts/PinContext'
@@ -21,7 +22,7 @@ const StatusBadge = ({ qty }) => {
   return <span className={`${base} bg-success/15 text-success border-success/20`}>En stock</span>
 }
 
-export default function ProductTable({ products, onEdit, onDelete, onAddStock, onRemoveStock, onShowHistory }) {
+export default function ProductTable({ products, onEdit, onDelete, onAddStock, onRemoveStock, onShowHistory, onSellProduct }) {
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
@@ -168,6 +169,16 @@ export default function ProductTable({ products, onEdit, onDelete, onAddStock, o
                 <td className="px-4 py-3"><StatusBadge qty={p.quantity} /></td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {onSellProduct && (
+                      <button
+                        onClick={() => onSellProduct(p)}
+                        disabled={p.quantity === 0}
+                        title="Vender"
+                        className="p-1.5 rounded hover:bg-white/5 text-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <BanknotesIcon className="w-4 h-4" />
+                      </button>
+                    )}
                     <button onClick={() => onShowHistory(p)} title="Historial" className="p-1.5 rounded hover:bg-white/5 text-muted hover:text-cream transition-colors">
                       <ClockIcon className="w-4 h-4" />
                     </button>
@@ -230,6 +241,15 @@ export default function ProductTable({ products, onEdit, onDelete, onAddStock, o
             </div>
 
             <div className="flex items-center gap-1 -mx-1 pt-1 border-t border-white/5">
+              {onSellProduct && (
+                <button
+                  onClick={() => onSellProduct(p)}
+                  disabled={p.quantity === 0}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded hover:bg-white/5 text-accent transition-colors text-xs disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <BanknotesIcon className="w-4 h-4" /> Vender
+                </button>
+              )}
               <button onClick={() => onAddStock(p)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded hover:bg-white/5 text-success transition-colors text-xs">
                 <PlusCircleIcon className="w-4 h-4" /> Sumar
               </button>
