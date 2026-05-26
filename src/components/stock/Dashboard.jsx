@@ -4,8 +4,8 @@ import {
   ExclamationTriangleIcon, BanknotesIcon, ShoppingBagIcon,
   LockClosedIcon, EyeIcon, EyeSlashIcon
 } from '@heroicons/react/24/outline'
-import PinModal from './PinModal'
-import { formatARS } from '../lib/formatCurrency'
+import PinModal from '../shared/PinModal'
+import { formatARS } from '../../lib/formatCurrency'
 
 export default function Dashboard({ products }) {
   const [unlocked, setUnlocked] = useState(false)

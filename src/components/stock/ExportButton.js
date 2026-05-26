@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx'
-import { formatDate } from '../lib/formatCurrency'
+import { formatDate } from '../../lib/formatCurrency'
 
 export function exportToExcel(products) {
   const rows = products.map(p => ({

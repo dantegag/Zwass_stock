@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { XMarkIcon, ArrowUpTrayIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
-import { parseFile, mapRows } from '../lib/parseExcel'
+import { parseFile, mapRows } from '../../lib/parseExcel'
 
 const APP_FIELDS = [
   { key: 'name', label: 'Nombre *' },

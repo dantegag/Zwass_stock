@@ -4,8 +4,8 @@ import {
   PencilIcon, TrashIcon, PlusCircleIcon, MinusCircleIcon,
   ClockIcon, MagnifyingGlassIcon, LockClosedIcon, EyeSlashIcon
 } from '@heroicons/react/24/outline'
-import { formatARS } from '../lib/formatCurrency'
-import PinModal from './PinModal'
+import { formatARS } from '../../lib/formatCurrency'
+import PinModal from '../shared/PinModal'
 
 const CATEGORIES = [
   'Bolsos y Mochilas','Carteras','Camperas',

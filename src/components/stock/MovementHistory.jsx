@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { XMarkIcon, PlusCircleIcon, MinusCircleIcon } from '@heroicons/react/24/outline'
-import { useStockMovements } from '../hooks/useStockMovements'
-import { formatDate } from '../lib/formatCurrency'
+import { useStockMovements } from '../../hooks/useStockMovements'
+import { formatDate } from '../../lib/formatCurrency'
 
 export default function MovementHistory({ product, onClose }) {
   const { movements, loading, fetchMovements } = useStockMovements(product?.id)
