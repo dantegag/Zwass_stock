@@ -152,7 +152,7 @@ src/
 │       ├── RegisterSaleModal.jsx
 │       ├── ProductPicker.jsx
 │       ├── SaleDetailsForm.jsx
-│       ├── SalesLog.jsx
+│       ├── SalesHistory.jsx       ← Historial de Ventas (lista + anular)
 │       ├── CashRegisterSummary.jsx
 │       ├── PaymentMethodTable.jsx
 │       ├── SalesCharts.jsx
@@ -223,24 +223,29 @@ The active tab uses `text-accent` and an underline. The right side shows today's
 - Modal closes; sales log refreshes via realtime.
 - On error (e.g. trigger raises "Stock insuficiente"): error toast, stay in modal, user can adjust quantity.
 
-### Sales Log
+### Historial de Ventas
 
 A table similar to ProductTable: `N° Factura | Fecha | Artículo | Color | Talle | Cant. | P. Unit | Total | Método | [⋯]`.
 - Default sort: `sold_at DESC`.
 - Filter row: search (invoice/product/notes) + date range + payment method dropdown.
+- Each sale is shown individually so any one of them can be located and reverted.
 - Sale rows for voided sales: row dimmed, text struck through, badge "Anulada".
 - Actions: 🕐 Ver detalle (drawer with notes + nationality), ❌ Anular venta (confirm modal → sets `voided_at`).
-- Prices and totals hidden by default until PIN unlocks. Cantidad and meta info always visible.
+- **Anular venta side-effects (handled by the DB trigger and queries):**
+  - Stock of the linked product is restored (+ `quantity` units).
+  - The sale stops counting in the Resumen de Caja (the summary query already filters `voided_at IS NULL`).
+  - The sale stays visible in the historial as "Anulada" so the audit trail is preserved.
+- **Prices and totals are always visible — no PIN required in Ventas.**
 - Mobile (md-): card list. Each card shows invoice on top, product name, payment method, total, and the actions.
 
 ### Cash Register Summary (Resumen de Caja)
 
-Toggle inside SalesView: `[ Log de ventas ] [ Resumen de caja ]`.
+Toggle inside SalesView: `[ Historial de ventas ] [ Resumen de caja ]`.
 
 When Resumen is active:
 
 1. **Time filter row** — chips `Hoy | Esta semana | Este mes` + custom `Desde [📅] Hasta [📅]`. State stored in component; default is "Hoy".
-2. **Payment method table** — rows for the 10 methods (in the spec's order); columns Pesos / Dólares / Euros. Values from sales filtered by `sold_at` within range AND `voided_at IS NULL`. Footer row: `VENTA TOTAL` per column. All amounts hidden behind PIN.
+2. **Payment method table** — rows for the 10 methods (in the spec's order); columns Pesos / Dólares / Euros. Values from sales filtered by `sold_at` within range AND `voided_at IS NULL` (anulled sales never appear). Footer row: `VENTA TOTAL` per column. **All amounts always visible — no PIN.**
 3. **Action buttons** — `[ Imprimir resumen ]` and `[ Exportar a Excel ]`.
 4. **Charts row** (below the table):
    - Bar chart: ARS revenue per day in range (USD/EUR omitted for clarity; tooltip text mentions this).
@@ -268,7 +273,7 @@ VENTA TOTAL         $1.465.800   U$S 450  € 200
 ··········································
 ```
 
-Triggered by `window.print()` from the "Imprimir resumen" button. PIN unlock is required (the print view never reveals amounts if locked).
+Triggered by `window.print()` from the "Imprimir resumen" button. No PIN required — amounts are always printed.
 
 ### Excel export
 
@@ -288,16 +293,15 @@ In `ProductTable` desktop row actions, a new icon button:
 
 Same button appears in the mobile card layout alongside `Sumar`/`Retirar`.
 
-### PIN protection
+### PIN protection (Stock only)
 
-Extracts the existing `unlocked` state from `Dashboard` and `ProductTable` into a `<PinContext>`:
+The PIN exists **only for the Stock module**. It hides:
+- Financial cards in the Stock dashboard (Valor al costo / Valor retail).
+- Price columns in the product table (P. Costo / P. Venta).
 
-```jsx
-const { unlocked, requestUnlock } = usePin();
-// requestUnlock() opens the PinModal if locked, no-op if already unlocked
-```
+The Ventas module (Historial, Resumen de Caja, print view, Excel export) has **no PIN gating** — amounts are visible to everyone.
 
-All places that previously held their own local `unlocked` state (Dashboard, ProductTable, new CashRegisterSummary, SalesLog) consume this context. One PIN entry unlocks prices everywhere for the session. A "Bloquear precios" button in the Nav locks again.
+The existing `unlocked` state inside `Dashboard` and `ProductTable` is consolidated into a small `<PinContext>` shared by those two components only, so a single PIN entry unlocks both at once for the session. The new sales components do not consume this context.
 
 ## Formatting
 
@@ -332,17 +336,17 @@ Manual end-to-end checklist after implementation, executed via the running dev s
 2. Register sale of an in-stock product → invoice generated `VTA-YYYYMMDD-001`, stock decrements live.
 3. Try selling more units than available → error toast, sale not created.
 4. Register sale in USD → row shows `U$S` formatting; Resumen has it in the Dólares column.
-5. Anular venta → row dims, product stock restored.
+5. Anular venta in Historial → row dims, product stock restored, sale disappears from Resumen totals.
 6. Time filters switch the Resumen table and charts.
-7. Print view → opens dialog with the dotted-frame layout, all chrome hidden.
+7. Print view → opens dialog with the dotted-frame layout, all chrome hidden, amounts shown without PIN.
 8. Excel export → file downloads, both sheets present with correct totals.
-9. PIN locked → all prices in both modules masked; unlock once → unlocked in both.
-10. Mobile breakpoint → sale modal and log render as cards, no horizontal scroll, all actions reachable.
-11. Realtime → opening two tabs, registering a sale in one updates the log and dashboard in the other.
+9. PIN locked in Stock → Dashboard financial cards and ProductTable price columns are masked. Ventas amounts remain visible regardless of PIN state.
+10. Mobile breakpoint → sale modal and historial render as cards, no horizontal scroll, all actions reachable.
+11. Realtime → opening two tabs, registering a sale in one updates the historial and dashboard in the other.
 
 ## Risks & mitigations
 
 - **Trigger raises an error in the middle of a sale.** Frontend surfaces the message in the toast; the modal remains open so the user can adjust quantity.
 - **Realtime channel disconnects.** Both `useProducts` and `useSales` re-subscribe on mount; manual refresh always works.
 - **Time zone bugs in invoice numbering or filters.** All "today/week/month" math happens with `America/Argentina/Buenos_Aires`. The trigger uses the same TZ for the invoice prefix.
-- **PIN context refactor breaks the existing Stock module.** Mitigated by leaving the same UX (lock icon, "Ver precios" button) and centralizing the unlocked flag in one place.
+- **PIN context refactor breaks the existing Stock module.** Mitigated by leaving the same UX (lock icon, "Ver precios" button) and centralizing the unlocked flag in one place. The refactor stays scoped to Dashboard + ProductTable since Ventas no longer participates.
