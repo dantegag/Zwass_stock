@@ -5,7 +5,7 @@ import {
   ClockIcon, MagnifyingGlassIcon, LockClosedIcon, EyeSlashIcon
 } from '@heroicons/react/24/outline'
 import { formatARS } from '../../lib/formatCurrency'
-import PinModal from '../shared/PinModal'
+import { usePin } from '../../contexts/PinContext'
 
 const CATEGORIES = [
   'Bolsos y Mochilas','Carteras','Camperas',
@@ -28,8 +28,7 @@ export default function ProductTable({ products, onEdit, onDelete, onAddStock, o
   const [sortKey, setSortKey] = useState('created_at')
   const [sortDir, setSortDir] = useState('desc')
   const [page, setPage] = useState(1)
-  const [pricesUnlocked, setPricesUnlocked] = useState(false)
-  const [showPin, setShowPin] = useState(false)
+  const { unlocked: pricesUnlocked, requestUnlock, lock } = usePin()
 
   const filtered = useMemo(() => {
     let list = [...products]
@@ -118,7 +117,7 @@ export default function ProductTable({ products, onEdit, onDelete, onAddStock, o
         <div className="flex items-center justify-between sm:ml-auto gap-2 text-xs text-muted">
           <span>{filtered.length} resultados</span>
           <button
-            onClick={() => pricesUnlocked ? setPricesUnlocked(false) : setShowPin(true)}
+            onClick={() => pricesUnlocked ? lock() : requestUnlock()}
             className="flex items-center gap-1 px-2 py-1 rounded border border-white/10 hover:border-accent/40 hover:text-accent transition-colors"
             title={pricesUnlocked ? 'Ocultar precios' : 'Mostrar precios'}
           >
@@ -274,9 +273,6 @@ export default function ProductTable({ products, onEdit, onDelete, onAddStock, o
         </div>
       )}
 
-      {showPin && (
-        <PinModal onSuccess={() => setPricesUnlocked(true)} onClose={() => setShowPin(false)} />
-      )}
     </div>
   )
 }

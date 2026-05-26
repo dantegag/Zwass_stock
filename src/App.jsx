@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
+import { PinProvider } from './contexts/PinContext'
 import Header from './components/shared/Header'
 import Dashboard from './components/stock/Dashboard'
 import ProductTable from './components/stock/ProductTable'
@@ -51,6 +52,7 @@ export default function App() {
   }
 
   return (
+    <PinProvider>
     <div className="min-h-screen bg-bg font-body">
       <Header
         onAddProduct={() => setProductModal('add')}
@@ -122,5 +124,6 @@ export default function App() {
         />
       )}
     </div>
+    </PinProvider>
   )
 }

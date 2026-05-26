@@ -1,15 +1,13 @@
-import { useState } from 'react'
 import {
   CubeIcon, ArchiveBoxIcon, ExclamationCircleIcon,
   ExclamationTriangleIcon, BanknotesIcon, ShoppingBagIcon,
   LockClosedIcon, EyeIcon, EyeSlashIcon
 } from '@heroicons/react/24/outline'
-import PinModal from '../shared/PinModal'
+import { usePin } from '../../contexts/PinContext'
 import { formatARS } from '../../lib/formatCurrency'
 
 export default function Dashboard({ products }) {
-  const [unlocked, setUnlocked] = useState(false)
-  const [showPin, setShowPin] = useState(false)
+  const { unlocked, requestUnlock, lock } = usePin()
 
   const total = products.length
   const totalUnits = products.reduce((s, p) => s + (p.quantity || 0), 0)
@@ -42,7 +40,7 @@ export default function Dashboard({ products }) {
         </p>
       </div>
       <button
-        onClick={() => unlocked ? setUnlocked(false) : setShowPin(true)}
+        onClick={() => unlocked ? lock() : requestUnlock()}
         className="text-muted hover:text-accent transition-colors mt-1 shrink-0"
         title={unlocked ? 'Ocultar' : 'Mostrar'}
       >
@@ -52,31 +50,25 @@ export default function Dashboard({ products }) {
   )
 
   return (
-    <>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-        <StatCard icon={CubeIcon} label="Productos" value={total} color="text-accent" />
-        <StatCard icon={ArchiveBoxIcon} label="Unidades" value={totalUnits} color="text-cream" />
-        <StatCard
-          icon={ExclamationCircleIcon}
-          label="Sin stock"
-          value={outOfStock}
-          color="text-danger"
-          valueClass={outOfStock > 0 ? 'text-danger' : 'text-cream'}
-        />
-        <StatCard
-          icon={ExclamationTriangleIcon}
-          label="Stock bajo"
-          value={lowStock}
-          color="text-warning"
-          valueClass={lowStock > 0 ? 'text-warning' : 'text-cream'}
-        />
-        <FinancialCard icon={BanknotesIcon} label="Valor al costo" value={formatARS(costValue)} />
-        <FinancialCard icon={ShoppingBagIcon} label="Valor retail" value={formatARS(saleValue)} />
-      </div>
-
-      {showPin && (
-        <PinModal onSuccess={() => setUnlocked(true)} onClose={() => setShowPin(false)} />
-      )}
-    </>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+      <StatCard icon={CubeIcon} label="Productos" value={total} color="text-accent" />
+      <StatCard icon={ArchiveBoxIcon} label="Unidades" value={totalUnits} color="text-cream" />
+      <StatCard
+        icon={ExclamationCircleIcon}
+        label="Sin stock"
+        value={outOfStock}
+        color="text-danger"
+        valueClass={outOfStock > 0 ? 'text-danger' : 'text-cream'}
+      />
+      <StatCard
+        icon={ExclamationTriangleIcon}
+        label="Stock bajo"
+        value={lowStock}
+        color="text-warning"
+        valueClass={lowStock > 0 ? 'text-warning' : 'text-cream'}
+      />
+      <FinancialCard icon={BanknotesIcon} label="Valor al costo" value={formatARS(costValue)} />
+      <FinancialCard icon={ShoppingBagIcon} label="Valor retail" value={formatARS(saleValue)} />
+    </div>
   )
 }
