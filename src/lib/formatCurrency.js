@@ -10,3 +10,15 @@ export function formatDate(isoString) {
   const d = new Date(isoString)
   return d.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
+
+const SYMBOLS = { ARS: '$', USD: 'U$S', EUR: '€' }
+
+export function formatMoney(amount, currency = 'ARS') {
+  const n = Number(amount) || 0
+  const formatted = new Intl.NumberFormat('es-AR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(n)
+  if (currency === 'ARS') return `$${formatted}`
+  return `${SYMBOLS[currency] || '$'} ${formatted}`
+}
