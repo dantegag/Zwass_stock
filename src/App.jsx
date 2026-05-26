@@ -15,7 +15,7 @@ export default function App() {
       <div className="min-h-screen bg-bg font-body">
         <Nav activeTab={tab} onTabChange={setTab} sales={sales} />
         <main className="max-w-screen-xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-6 sm:gap-8">
-          {tab === 'stock' ? <StockView /> : <SalesView sales={sales} />}
+          {tab === 'stock' ? <StockView /> : <SalesView />}
         </main>
         <Toaster position="bottom-right" />
       </div>
