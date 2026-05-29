@@ -1,17 +1,31 @@
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import Header from '../shared/Header'
 import RegisterSaleButton from './RegisterSaleButton'
 import SalesHistory from './SalesHistory'
 import CashRegisterSummary from './CashRegisterSummary'
+import ImportSalesModal from './ImportSalesModal'
 import { useSales } from '../../hooks/useSales'
 
 export default function SalesView({ onOpenSaleModal }) {
-  const { sales, voidSale } = useSales()
+  const { sales, voidSale, importMany } = useSales()
   const [subTab, setSubTab] = useState('history')
+  const [importOpen, setImportOpen] = useState(false)
+
+  const handleImport = async (rows) => {
+    const res = await importMany(rows)
+    if (res.imported > 0) {
+      toast.success(`${res.imported} ventas importadas`)
+    }
+    if (res.errors > 0) {
+      toast.error(`${res.errors} ventas con error`)
+    }
+    return res
+  }
 
   return (
     <>
-      <Header />
+      <Header onImport={() => setImportOpen(true)} />
 
       <div className="flex flex-col items-center gap-6 mb-6">
         <RegisterSaleButton onClick={onOpenSaleModal} />
@@ -38,6 +52,13 @@ export default function SalesView({ onOpenSaleModal }) {
 
       {subTab === 'history' && <SalesHistory sales={sales} onVoid={voidSale} />}
       {subTab === 'summary' && <CashRegisterSummary sales={sales} />}
+
+      {importOpen && (
+        <ImportSalesModal
+          onImport={handleImport}
+          onClose={() => setImportOpen(false)}
+        />
+      )}
     </>
   )
 }
