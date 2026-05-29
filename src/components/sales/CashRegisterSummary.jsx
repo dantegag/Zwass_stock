@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import { PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import PaymentMethodTable from './PaymentMethodTable'
 import SalesCharts from './SalesCharts'
@@ -27,6 +27,20 @@ export default function CashRegisterSummary({ sales }) {
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [printing, setPrinting] = useState(false)
+  const fromInputRef = useRef(null)
+
+  // When user switches to "custom", auto-focus + open the "from" date picker so
+  // the calendar opens on the first click (instead of needing a second click).
+  useEffect(() => {
+    if (range !== 'custom') return
+    const id = requestAnimationFrame(() => {
+      const el = fromInputRef.current
+      if (!el) return
+      el.focus()
+      try { el.showPicker?.() } catch { /* ignore unsupported browsers */ }
+    })
+    return () => cancelAnimationFrame(id)
+  }, [range])
 
   const { startDate, endDate } = useMemo(() => {
     const end = new Date()
@@ -82,9 +96,20 @@ export default function CashRegisterSummary({ sales }) {
           </div>
           {range === 'custom' && (
             <div className="flex gap-2 items-center text-sm">
-              <input type="date" value={from} onChange={e => setFrom(e.target.value)} className="bg-surface border border-white/10 rounded-lg px-2 py-1.5 text-cream" />
+              <input
+                ref={fromInputRef}
+                type="date"
+                value={from}
+                onChange={e => setFrom(e.target.value)}
+                className="bg-surface border border-white/10 rounded-lg px-2 py-1.5 text-cream"
+              />
               <span className="text-muted">→</span>
-              <input type="date" value={to} onChange={e => setTo(e.target.value)} className="bg-surface border border-white/10 rounded-lg px-2 py-1.5 text-cream" />
+              <input
+                type="date"
+                value={to}
+                onChange={e => setTo(e.target.value)}
+                className="bg-surface border border-white/10 rounded-lg px-2 py-1.5 text-cream"
+              />
             </div>
           )}
           <div className="sm:ml-auto flex gap-2">
